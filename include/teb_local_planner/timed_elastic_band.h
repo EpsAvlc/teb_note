@@ -409,7 +409,7 @@ public:
 		      boost::optional<double> start_orientation, boost::optional<double> goal_orientation, int min_samples = 3, bool guess_backwards_motion = false);  
   
   /**
-   * @brief Initialize a trajectory from a reference pose sequence (positions and orientations).
+   * @brief 根据一个指定的Pose集合来初始化一个轨迹
    *
    * This method initializes the timed elastic band using a pose container
    * (e.g. as local plan from the ros navigation stack). \n

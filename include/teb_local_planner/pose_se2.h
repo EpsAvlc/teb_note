@@ -239,6 +239,7 @@ public:
   {
     _position.coeffRef(0) += pose_as_array[0];
     _position.coeffRef(1) += pose_as_array[1];
+    // 将theta的值钳制在-pi到pi中。
     _theta = g2o::normalize_theta( _theta + pose_as_array[2] );
   }
   

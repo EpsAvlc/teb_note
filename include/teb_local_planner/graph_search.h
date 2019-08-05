@@ -127,7 +127,7 @@ protected:
 
   /**
    * @brief Depth First Search implementation to find all paths between the start and the specified goal vertex.
-   *
+   *        深度优先搜索，来找到可能的路径
    * Complete paths are stored to the internal path container.
    * @sa http://www.technical-recipes.com/2011/a-recursive-algorithm-to-find-all-paths-between-two-given-nodes/
    * @param g Graph on which the depth first should be performed
@@ -188,7 +188,7 @@ public:
 
   /**
    * @brief Create a graph and sample points in the global frame that can be used to explore new possible paths between start and goal.
-   *
+   *  创建图，并撒点，寻找可能的路径。\n
    * This version of the graph samples keypoints in a predefined area (config) in the current frame between start and goal. \n
    * Afterwards all feasible paths between start and goal point are extracted using a Depth First Search. \n
    * Use the sampling method for complex, non-point or huge obstacles. \n

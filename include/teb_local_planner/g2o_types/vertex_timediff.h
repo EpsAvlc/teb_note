@@ -62,6 +62,7 @@ namespace teb_local_planner
   * @see VertexPointXY
   * @see VertexOrientation
   */
+ // 时间差分顶点
 class VertexTimeDiff : public g2o::BaseVertex<1, double>
 {
 public:

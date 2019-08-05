@@ -283,8 +283,8 @@ bool TimedElasticBand::initTrajectoryToGoal(const PoseSE2& start, const PoseSE2&
 {
   if (!isInit())
   {   
-    addPose(start); // add starting point
-    setPoseVertexFixed(0,true); // StartConf is a fixed constraint during optimization
+    addPose(start); // 将起始点的Pose构造一个g2o的顶点，并加入到该类的顶点容器中
+    setPoseVertexFixed(0,true); // 将起始点的Pose的顶点设为fixed，因为在优化过程中不对其进行优化
 
     double timestep = 0.1;
         

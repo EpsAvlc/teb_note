@@ -293,7 +293,7 @@ public:
   TebOptimalPlannerPtr addAndInitNewTeb(BidirIter path_start, BidirIter path_end, Fun fun_position, double start_orientation, double goal_orientation, const geometry_msgs::Twist* start_velocity);
 
   /**
-   * @brief Add a new Teb to the internal trajectory container, if this teb constitutes a new equivalence class. Initialize it with a simple straight line between a given start and goal
+   * @brief 如果一个新的路径的有一个新的h-signature，则增加一个新的TEB到规划器的容器中， 并且简单的用直线连接起点与终点
    * @param start start pose
    * @param goal goal pose
    * @param start_velocity start velocity (optional)

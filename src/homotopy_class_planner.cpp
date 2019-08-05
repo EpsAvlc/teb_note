@@ -416,7 +416,7 @@ void HomotopyClassPlanner::updateAllTEBs(const PoseSE2* start, const PoseSE2* go
 
 void HomotopyClassPlanner::optimizeAllTEBs(int iter_innerloop, int iter_outerloop)
 {
-  // optimize TEBs in parallel since they are independend of each other
+  // 在多线程中优化teb（各个路径彼此不关联）
   if (cfg_->hcp.enable_multithreading)
   {
     boost::thread_group teb_threads;

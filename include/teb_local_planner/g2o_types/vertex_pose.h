@@ -60,6 +60,7 @@ namespace teb_local_planner
   * @see PoseSE2
   * @see VertexTimeDiff
   */
+ // 优化变量的维度为3， 数据类型为PoseSE2
 class VertexPose : public g2o::BaseVertex<3, PoseSE2 >
 {
 public:
