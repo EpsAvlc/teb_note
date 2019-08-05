@@ -49,11 +49,11 @@
 #include <complex>
 #include <iterator>
 
-#include <teb_local_planner/obstacles.h>
+#include "teb_local_planner/obstacles.h"
 
 // G2O Types
-#include <teb_local_planner/g2o_types/vertex_pose.h>
-#include <teb_local_planner/g2o_types/vertex_timediff.h>
+#include "teb_local_planner/g2o_types/vertex_pose.h"
+#include "teb_local_planner/g2o_types/vertex_timediff.h"
 
 
 namespace teb_local_planner
@@ -459,17 +459,17 @@ public:
   /**
    * @brief Hot-Start from an existing trajectory with updated start and goal poses.
    *
-   * This method updates a previously optimized trajectory with a new start and/or a new goal pose. \n
-   * The current simple implementation cuts of pieces of the trajectory that are already passed due to the new start. \n
-   * Afterwards the start and goal pose are replaced by the new ones. The resulting discontinuity will not be smoothed.
-   * The optimizer has to smooth the trajectory in TebOptimalPlanner. \n
+   * 该方法将更新一个已经优化后的路径的起始点与终点 \n
+   * 目前的实现简单的将轨迹中落后于起点的部分裁剪掉 \n
+   * 随后起点与终点会被替换成新的起点与终点。这个函数不对轨迹进行平滑
+   * 优化器会平滑新的轨迹 \n
    * 
    * @todo Smooth the trajectory here and test the performance improvement of the optimization.
    * @todo Implement a updateAndPruneTEB based on a new reference path / pose sequence.
    * 
    * @param new_start New start pose (optional)
    * @param new_goal New goal pose (optional)
-   * @param min_samples Specify the minimum number of samples that should at least remain in the trajectory
+   * @param min_samples 指定轨迹中至少应保留多少个采样
    */  
   void updateAndPruneTEB(boost::optional<const PoseSE2&> new_start, boost::optional<const PoseSE2&> new_goal, int min_samples = 3);
   

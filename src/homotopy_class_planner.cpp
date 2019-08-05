@@ -36,7 +36,7 @@
  * Author: Christoph Rösmann
  *********************************************************************/
 
-#include <teb_local_planner/homotopy_class_planner.h>
+#include "teb_local_planner/homotopy_class_planner.h"
 
 #include <limits>
 
@@ -65,9 +65,9 @@ void HomotopyClassPlanner::initialize(const TebConfig& cfg, ObstContainer* obsta
   via_points_ = via_points;
   robot_model_ = robot_model;
 
-  if (cfg_->hcp.simple_exploration)
+  if (cfg_->hcp.simple_exploration)  // 是否用简单的策略来生成路径，详见hcp.simple_exploration的定义。
     graph_search_ = boost::shared_ptr<GraphSearchInterface>(new lrKeyPointGraph(*cfg_, this));
-  else
+  else // 用随机路标图来生成路径
     graph_search_ = boost::shared_ptr<GraphSearchInterface>(new ProbRoadmapGraph(*cfg_, this));
 
   initialized_ = true;
@@ -215,8 +215,8 @@ void HomotopyClassPlanner::renewAndAnalyzeOldTebs(bool delete_detours)
   equivalence_classes_.clear();
 
   // Collect h-signatures for all existing TEBs and store them together with the corresponding iterator / pointer:
-//   typedef std::list< std::pair<TebOptPlannerContainer::iterator, std::complex<long double> > > TebCandidateType;
-//   TebCandidateType teb_candidates;
+  //   typedef std::list< std::pair<TebOptPlannerContainer::iterator, std::complex<long double> > > TebCandidateType;
+  //   TebCandidateType teb_candidates;
 
   // get new homotopy classes and delete multiple TEBs per homotopy class
   TebOptPlannerContainer::iterator it_teb = tebs_.begin();
@@ -229,14 +229,14 @@ void HomotopyClassPlanner::renewAndAnalyzeOldTebs(bool delete_detours)
       continue;
     }
 
-    // calculate equivalence class for the current candidate
+    // 这里的EquivalenceClassPtr指向的是每个路径的H-signature类
     EquivalenceClassPtr equivalence_class = calculateEquivalenceClass(it_teb->get()->teb().poses().begin(), it_teb->get()->teb().poses().end(), getCplxFromVertexPosePtr , obstacles_,
                                                                       it_teb->get()->teb().timediffs().begin(), it_teb->get()->teb().timediffs().end());
 
 //     teb_candidates.push_back(std::make_pair(it_teb,H));
 
     // WORKAROUND until the commented code below works
-    // Here we do not compare cost values. Just first come first serve...
+    // 比较每个路径的H-signature的值，只有当有新的值出现才会加入到规划器的TEBs中。
     bool new_flag = addEquivalenceClassIfNew(equivalence_class);
     if (!new_flag)
     {
@@ -395,7 +395,7 @@ TebOptimalPlannerPtr HomotopyClassPlanner::addAndInitNewTeb(const std::vector<ge
 
 void HomotopyClassPlanner::updateAllTEBs(const PoseSE2* start, const PoseSE2* goal, const geometry_msgs::Twist* start_velocity)
 {
-  // If new goal is too far away, clear all existing trajectories to let them reinitialize later.
+  // 如果新的目标太远，清除所有的teb的轨迹来重新进行初始化路径
   // Since all Tebs are sharing the same fixed goal pose, just take the first candidate:
   if (!tebs_.empty() && (goal->position() - tebs_.front()->teb().BackPose().position()).norm() >= cfg_->trajectory.force_reinit_new_goal_dist)
   {

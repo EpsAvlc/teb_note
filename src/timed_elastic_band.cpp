@@ -36,7 +36,7 @@
  * Author: Christoph Rösmann
  *********************************************************************/
 
-#include <teb_local_planner/timed_elastic_band.h>
+#include "teb_local_planner/timed_elastic_band.h"
 
 
 namespace teb_local_planner
@@ -600,6 +600,7 @@ void TimedElasticBand::updateAndPruneTEB(boost::optional<const PoseSE2&> new_sta
     double dist;
     int lookahead = std::min<int>( sizePoses()-min_samples, 10); // satisfy min_samples, otherwise max 10 samples
 
+    // 找寻Pose中离start最近的点
     int nearest_idx = 0;
     for (int i = 1; i<=lookahead; ++i)
     {
@@ -625,6 +626,7 @@ void TimedElasticBand::updateAndPruneTEB(boost::optional<const PoseSE2&> new_sta
     Pose(0) = *new_start;
   }
   
+  // 将目标点更新为新的目标
   if (new_goal && sizePoses()>0)
   {
     BackPose() = *new_goal;

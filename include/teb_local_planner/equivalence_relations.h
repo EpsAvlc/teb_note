@@ -47,7 +47,8 @@ namespace teb_local_planner
 /**
  * @class EquivalenceClass
  * @brief Abstract class that defines an interface for computing and comparing equivalence classes
- *
+ * 该类是一个基类，用来定义在拓扑意义上等价的路径
+ * 
  * Equivalence relations are utilized in order to test if two trajectories are belonging to the same
  * equivalence class w.r.t. the current obstacle configurations. A common equivalence relation is
  * the concept of homotopy classes. All trajectories belonging to the same homotopy class
@@ -87,7 +88,7 @@ public:
    virtual bool isValid() const = 0;
 
    /**
-    * @brief Check if the trajectory is non-looping around an obstacle
+    * @brief 检测一条路径是否围绕着某个障碍物（而无法离开）
     * @return Returns false, if the trajectory loops around an obstacle
     */
    virtual bool isReasonable() const = 0;

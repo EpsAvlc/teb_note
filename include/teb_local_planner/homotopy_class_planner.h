@@ -54,14 +54,14 @@
 #include <ros/console.h>
 #include <ros/ros.h>
 
-#include <teb_local_planner/planner_interface.h>
-#include <teb_local_planner/teb_config.h>
-#include <teb_local_planner/obstacles.h>
-#include <teb_local_planner/optimal_planner.h>
-#include <teb_local_planner/visualization.h>
-#include <teb_local_planner/robot_footprint_model.h>
-#include <teb_local_planner/equivalence_relations.h>
-#include <teb_local_planner/graph_search.h>
+#include "teb_local_planner/planner_interface.h"
+#include "teb_local_planner/teb_config.h"
+#include "teb_local_planner/obstacles.h"
+#include "teb_local_planner/optimal_planner.h"
+#include "teb_local_planner/visualization.h"
+#include "teb_local_planner/robot_footprint_model.h"
+#include "teb_local_planner/equivalence_relations.h"
+#include "teb_local_planner/graph_search.h"
 
 
 namespace teb_local_planner
@@ -82,8 +82,8 @@ inline std::complex<long double> getCplxFromMsgPoseStamped(const geometry_msgs::
 
 /**
  * @class HomotopyClassPlanner
- * @brief Local planner that explores alternative homotopy classes, create a plan for each alternative
- *	  and finally return the robot controls for the current best path (repeated in each sampling interval)
+ * @brief 为每一条homotopy class建立plan的局部路径规划器
+ *	  并且返回最佳路径。
  *
  * Equivalence classes (e.g. homotopy) are explored using the help of a search-graph. \n
  * A couple of possible candidates are sampled / generated and filtered afterwards such that only a single candidate
@@ -117,11 +117,11 @@ public:
 
   /**
    * @brief Construct and initialize the HomotopyClassPlanner
-   * @param cfg Const reference to the TebConfig class for internal parameters
-   * @param obstacles Container storing all relevant obstacles (see Obstacle)
-   * @param robot_model Shared pointer to the robot shape model used for optimization (optional)
-   * @param visualization Shared pointer to the TebVisualization class (optional)
-   * @param via_points Container storing via-points (optional)
+   * @param cfg Teb config类
+   * @param obstacles 保存所有的obstacle信息
+   * @param robot_model 用来优化的机器人形状模型 (可选)
+   * @param visualization Shared pointer to the TebVisualization class (可选)
+   * @param via_points Container storing via-points (可选)
    */
   HomotopyClassPlanner(const TebConfig& cfg, ObstContainer* obstacles = NULL, RobotFootprintModelPtr robot_model = boost::make_shared<PointRobotFootprint>(),
                        TebVisualizationPtr visualization = TebVisualizationPtr(), const ViaPointContainer* via_points = NULL);
@@ -132,7 +132,7 @@ public:
   virtual ~HomotopyClassPlanner();
 
   /**
-   * @brief Initialize the HomotopyClassPlanner
+   * @brief HomotopyClassPlanner 初始化函数
    * @param cfg Const reference to the TebConfig class for internal parameters
    * @param obstacles Container storing all relevant obstacles (see Obstacle)
    * @param robot_model Shared pointer to the robot shape model used for optimization (optional)
@@ -148,21 +148,21 @@ public:
   //@{
 
   /**
-   * @brief Plan a trajectory based on an initial reference plan.
+   * @brief 给一个作为初始值的路径Plan进行优化
    *
    * Provide this method to create and optimize a trajectory that is initialized
    * according to an initial reference plan (given as a container of poses).
-   * @warning The current implementation extracts only the start and goal pose and calls the overloaded plan()
-   * @param initial_plan vector of geometry_msgs::PoseStamped (must be valid until clearPlanner() is called!)
-   * @param start_vel Current start velocity (e.g. the velocity of the robot, only linear.x, linear.y (holonomic) and angular.z are used)
-   * @param free_goal_vel if \c true, a nonzero final velocity at the goal pose is allowed,
-   *		      otherwise the final velocity will be zero (default: false)
+   * @warning 目前的实现只是提取了路径的起点与终点，并且调用重载的plan()函数
+   * @param initial_plan vector of geometry_msgs::PoseStamped (直到 clearPlanner() 函数被调用前都应该有效)
+   * @param start_vel 目前的起始速度 (e.g. the velocity of the robot, only linear.x, linear.y (holonomic) and angular.z are used)
+   * @param free_goal_vel 如果设置为 \c true, 到达终点时速度不为0也是可以的,
+   *		      否则规划时会使得到达终点时速度为0 (default: false)
    * @return \c true if planning was successful, \c false otherwise
    */
   virtual bool plan(const std::vector<geometry_msgs::PoseStamped>& initial_plan, const geometry_msgs::Twist* start_vel = NULL, bool free_goal_vel=false);
 
   /**
-   * @brief Plan a trajectory between a given start and goal pose (tf::Pose version).
+   * @brief 给定起始位姿与终点位姿，规划路径
    *
    * Provide this method to create and optimize a trajectory that is initialized between a given start and goal pose.
    * @param start tf::Pose containing the start pose of the trajectory
@@ -188,7 +188,7 @@ public:
   virtual bool plan(const PoseSE2& start, const PoseSE2& goal, const geometry_msgs::Twist* start_vel = NULL, bool free_goal_vel=false);
 
   /**
-   * @brief Get the velocity command from a previously optimized plan to control the robot at the current sampling interval.
+   * @brief 得到某个已经规划过的路径的本次采样时刻的速度
    * @warning Call plan() first and check if the generated plan is feasible.
    * @param[out] vx translational velocity [m/s]
    * @param[out] vy strafing velocity which can be nonzero for holonomic robots [m/s]
@@ -198,7 +198,7 @@ public:
   virtual bool getVelocityCommand(double& vx, double& vy, double& omega) const;
 
   /**
-   * @brief Access current best trajectory candidate (that relates to the "best" homotopy class).
+   * @brief 获得目前最好的路径候选
    *
    * If no trajectory is available, the pointer will be empty.
    * If only a single trajectory is available, return it.
@@ -208,15 +208,15 @@ public:
   TebOptimalPlannerPtr bestTeb() const {return tebs_.empty() ? TebOptimalPlannerPtr() : tebs_.size()==1 ? tebs_.front() : best_teb_;}
 
   /**
-   * @brief Check whether the planned trajectory is feasible or not.
+   * @brief 检测路径是否可行
    *
-   * This method currently checks only that the trajectory, or a part of the trajectory is collision free.
+   * 该方法目前只检测规划的路径是否没有碰撞。
    * Obstacles are here represented as costmap instead of the internal ObstacleContainer.
    * @param costmap_model Pointer to the costmap model
    * @param footprint_spec The specification of the footprint of the robot in world coordinates
    * @param inscribed_radius The radius of the inscribed circle of the robot
    * @param circumscribed_radius The radius of the circumscribed circle of the robot
-   * @param look_ahead_idx Number of poses along the trajectory that should be verified, if -1, the complete trajectory will be checked.
+   * @param look_ahead_idx 该轨迹上的多少个Pose会被检查。如果设为-1，则整个路径都会被检查。
    * @return \c true, if the robot footprint along the first part of the trajectory intersects with
    *         any obstacle in the costmap, \c false otherwise.
    */
@@ -250,7 +250,7 @@ public:
 
 
   /**
-   * @brief Explore paths in new equivalence classes (e.g. homotopy classes) and initialize TEBs from them.
+   * @brief 探索新的路径，并在这些路径中初始化TEBs
    *
    * This "all-in-one" method creates a graph with position keypoints from which
    * feasible paths (with clearance from obstacles) are extracted. \n
@@ -310,7 +310,7 @@ public:
   TebOptimalPlannerPtr addAndInitNewTeb(const std::vector<geometry_msgs::PoseStamped>& initial_plan, const geometry_msgs::Twist* start_velocity);
 
   /**
-   * @brief Update TEBs with new pose, goal and current velocity.
+   * @brief 用新的位姿，目标，速度来更新所有的TEBs
    * @param start New start pose (optional)
    * @param goal New goal pose (optional)
    * @param start_velocity start velocity (optional)
@@ -374,7 +374,7 @@ public:
   virtual bool isHorizonReductionAppropriate(const std::vector<geometry_msgs::PoseStamped>& initial_plan) const;
 
   /**
-   * @brief Calculate the equivalence class of a path
+   * @brief 计算某个路径的H-signature
    *
    * Currently, only the H-signature (refer to HSignature) is implemented.
    *
@@ -481,11 +481,11 @@ protected:
 
 
   /**
-   * @brief Renew all found h-signatures for the new planning step based on existing TEBs. Optionally detours can be discarded.
+   * @brief 对所有存在的TEBs,更新H-signature Optionally detours can be discarded.
    *
    * Calling this method in each new planning interval is really important.
-   * First all old h-signatures are deleted, since they could be invalid for this planning step (obstacle position may changed).
-   * Afterwards the h-signatures are calculated for each existing TEB/trajectory and is inserted to the list of known h-signatures.
+   * 由于障碍物的改变，所有的H-signature都可能发生变化，所以先删除所有旧的H-signature。
+   * 然后再计算新的H-signature，并且加入到队列中。
    * Doing this is important to prefer already optimized trajectories in contrast to initialize newly explored coarse paths.
    * @param delete_detours if this param is \c true, all existing TEBs are cleared from detour-candidates by utilizing deleteTebDetours().
    */

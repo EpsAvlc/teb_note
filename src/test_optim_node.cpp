@@ -82,7 +82,8 @@ int main( int argc, char** argv )
   
   // load ros parameters from node handle
   config.loadRosParamFromNodeHandle(n);
- 
+  
+  // ros 定时器，每隔特定时间执行回调函数
   ros::Timer cycle_timer = n.createTimer(ros::Duration(0.025), CB_mainCycle);
   ros::Timer publish_timer = n.createTimer(ros::Duration(0.1), CB_publishCycle);
   
@@ -165,6 +166,7 @@ int main( int argc, char** argv )
 // Planning loop
 void CB_mainCycle(const ros::TimerEvent& e)
 {
+  // 规划期每隔0.025s规划一次路径
   planner->plan(PoseSE2(-4,0,0), PoseSE2(4,0,0)); // hardcoded start and goal for testing purposes
 }
 

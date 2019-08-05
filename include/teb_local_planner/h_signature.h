@@ -77,7 +77,8 @@ public:
 
 
    /**
-    * @brief Calculate the H-Signature of a path
+    * @brief 计算某个路径的H-signature的值，详见论文
+    * 《Integrated online trajectory planning and optimization in distinctive topologies》
     *
     * The implemented function accepts generic path descriptions that are restricted to the following structure: \n
     * The path is composed of points T and is represented by a std::vector< T > or similar type (std::list, std::deque, ...). \n
