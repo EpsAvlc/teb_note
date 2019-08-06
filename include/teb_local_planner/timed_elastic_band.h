@@ -532,7 +532,7 @@ public:
   //@{
   
   /**
-   * @brief Find the closest point on the trajectory w.r.t. to a provided reference point.
+   * @brief 在轨迹中寻找与参考点最近的点
    * 
    * This function can be useful to find the part of a trajectory that is close to an obstacle.
    * 

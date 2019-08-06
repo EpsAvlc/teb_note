@@ -444,7 +444,7 @@ void TebOptimalPlanner::AddEdgesObstacles(double weight_multiplier)
           // TODO we ignore the robot footprint here in the association stage
           double dist = obst->getMinimumDistance(teb_.Pose(i).position());
           
-          // force considering obstacle if really close to the current pose
+          // 强制将离某个Pose距离很近的障碍物加入考虑中
         if (dist < cfg_->obstacles.min_obstacle_dist*cfg_->obstacles.obstacle_association_force_inclusion_factor)
           {
               relevant_obstacles.push_back(obst.get());
@@ -682,7 +682,7 @@ void TebOptimalPlanner::AddEdgesViaPoints()
      
     // check if point conicides with goal or is located behind it
     if ( index > n-2 ) 
-      index = n-2; // set to a pose before the goal, since we can move it away!
+      index = n-2; // index不能为n-1，因为是goal，无法移动。
     // check if point coincides with start or is located before it
     if ( index < 1)
     {
@@ -754,7 +754,6 @@ void TebOptimalPlanner::AddEdgesVelocity()
       velocity_edge->setTebConfig(*cfg_);
       optimizer_->addEdge(velocity_edge);
     } 
-    
   }
 }
 

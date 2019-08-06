@@ -184,7 +184,7 @@ public:
 /**
  * @class EdgeInflatedObstacle
  * @brief Edge defining the cost function for keeping a minimum distance from inflated obstacles.
- * 
+ * 带膨胀层的障碍物
  * The edge depends on a single vertex \f$ \mathbf{s}_i \f$ and minimizes: \n
  * \f$ \min \textrm{penaltyBelow}( dist2point, min_obstacle_dist ) \cdot weight_inflation \f$. \n
  * Additional, a second penalty is provided with \n

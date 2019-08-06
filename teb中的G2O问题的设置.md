@@ -31,11 +31,15 @@ $$
 
 ## 边
 
-### EdgeObstacle
+### 障碍物约束
 
-* 定义于g2o_types/edge_obstacle.h中
+在AddEdgeObstacle函数中，只将离某个Pose最近的最左边与最右边的两个Obstacle加入优化中。（因为优化路径不会使得路径相对于障碍物的位置关系发生改变）。同时，还设了一个阈值，凡是离该Pose距离低于某个距离的障碍物也一并加入考虑之中。
 
-* 一元边，观测值维度为1，类型为Obstacle基类，连接VertexPose顶点
+#### EdgeObstacle
+
+* 定义于g2o_types/edge_obstacle.h中，当inflated=false时使用此障碍物边
+
+* 一元边，观测值维度为1，测量值类型为Obstacle基类，连接VertexPose顶点
 
 * 存储了某个障碍物的中心点的三维位置，形状与顶点的位置
 
@@ -46,6 +50,68 @@ $$
   $$
 
 * 信息矩阵为cfg_->optim.weight_obstacle * weight_multiplier
+
+#### EdgeInflatedObstacle
+
+* 定义于g2o_types/edge_obstacle.h中，当inflated=true时使用此障碍物边
+
+* 一元边，观测值维度为2，类型为Obstacle基类，连接VertexPose顶点
+
+* $$
+  error[0] = dist > min\_obstacle\_dist + \epsilon ? 0 : (min\_obstacle\_dist + \epsilon) - dist \\
+  error[1] = dist > inflation\_dist ? 0 : inflation\_dist - dist \\
+  $$
+
+* 信息矩阵为对角阵，(0,0) = weight_obstacle
+
+### via_point约束
+
+via_point是一类点，其规定了轨迹应当经过这些点，否则会产生相应的cost。via_point边会与原规划的路径中与其距离最近的Pose顶点相连。
+
+#### EdgeViaPoint
+
+* 定义于g2o_types/edge_via_point.h中
+* 一元边，观测值维度为1，类型为Eigen::Vector2d*，连接VertexPose顶点
+* 存储了某个via_point的位置。
+* error为其连接的Pose顶点的位置到这个Viapoint的距离的模长。
+* 信息矩阵为1x1的矩阵，其值为weight_viapoint
+
+### 速度约束
+
+#### EdgeVelocity
+
+* 定义于g2o_types/edge_via_point.h中
+* 三元边，观测值变量维度为2，类型为double,连接两个VetexPose与一个VertexTimeDiff
+* 速度由两个VetexPose间的距离除以时间得到。角速度由两个VetexPose间的角度除以时间得到
+* error有两项，分别是线速度与线速度线速度是否在设定好的区间内。
+* 信息矩阵为3x3对角矩阵，(0,0) = weight_max_vel_x, (1,1) = weight_max_vel_y, (2,2) =weight_max_vel_theta（对于全向轮底盘来说）
+
+###  加速度约束
+
+####　EdgeAcceleration
+
+* 定义于g2o_types/edge_acceleration.h中
+* 五元边，观测值维度为2，类型为double，连接三个pose与两个timediff顶点
+* 根据三个Pose与两个timediff做两次差分得到线加速度与角加速度。
+* error有两项，分别是线加速度与角加速度是否在设定好的区间内。
+* 信息矩阵为2x2对角矩阵（对于阿克曼底盘来说），(0,0) =weight_acc_lim_x, (1,1) = weight_acc_lim_theta,
+
+### 时间最优约束
+
+#### EdgeTimeOptimal
+
+* 定义于g2o_types/edge_time_optimal.h中
+* 一元边，观测值维度为１，数据类型为double，连接一个VertexTimeDiff
+* error直接就是连接的VertexTimeDiff的dt本身
+* 信息矩阵为1x1矩阵，其值为weight_optimaltime
+
+### 动力学约束
+
+#### EdgeKinematicsCarlike
+
+* 定义于g2o_types/edge_time_optimal.h中
+* 二元边，观测值维度为2，数据类型为double，连接两个VertexPose
+* 误差由文章[^1]中的动力学约束提出。阿克曼底盘模型还增加了最小转弯半径的约束。
 
 
 
