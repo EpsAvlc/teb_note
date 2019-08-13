@@ -185,6 +185,7 @@ bool TebOptimalPlanner::optimizeTEB(int iterations_innerloop, int iterations_out
   
   for(int i=0; i<iterations_outerloop; ++i)
   {
+    // 每次优化之前都检测是否需要插入或者删除pose点
     if (cfg_->trajectory.teb_autosize)
     {
       //teb_.autoResize(cfg_->trajectory.dt_ref, cfg_->trajectory.dt_hysteresis, cfg_->trajectory.min_samples, cfg_->trajectory.max_samples);
